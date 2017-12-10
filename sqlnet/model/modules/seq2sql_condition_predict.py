@@ -83,7 +83,7 @@ class Seq2SQLCondPredictor(nn.Module):
             else:
                 cur_inp = Variable(torch.from_numpy(init_inp))
             cur_h = decoder_hidden
-            while len(done_set) < B*4 and t < 100:
+            while len(done_set) < B and t < 100:
                 g_s, cur_h = self.cond_decoder(cur_inp, cur_h)
                 g_s_expand = g_s.unsqueeze(2)
 
