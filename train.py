@@ -1,4 +1,3 @@
-### TODO: Need to be test yet!
 import json
 import torch
 from sqlnet.utils import *
