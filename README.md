@@ -81,7 +81,7 @@ Test a trained SQLNet model with column attention and trainable embedding:
 python test.py --ca --train_emb
 ```
 
-Test a trained [Seq2SQL model](https://arxiv.org/abs/1709.00103) withour RL on the re-splitted dataset
+Test a trained [Seq2SQL model](https://arxiv.org/abs/1709.00103) without RL on the re-splitted dataset
 ```bash
 python test.py --baseline --dataset 1
 ```
