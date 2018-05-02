@@ -48,6 +48,8 @@ if __name__ == '__main__':
     word_emb = load_word_emb('glove/glove.%dB.%dd.txt'%(B_word,N_word), \
             load_used=args.train_emb, use_small=USE_SMALL)
 
+    char_emb = load_char_emb('glove/glove.840B.300d-char.txt',load_used=True)
+    
     if args.baseline:
         model = Seq2SQL(word_emb, N_word=N_word, gpu=GPU,
                 trainable_emb = args.train_emb)

@@ -285,3 +285,22 @@ def load_word_emb(file_name, load_used=False, use_small=False):
         with open('glove/usedwordemb.npy') as inf:
             word_emb_val = np.load(inf)
         return w2i, word_emb_val
+
+    
+def load_char_emb(file_name, load_used=False, use_small=False):
+    if not load_used:
+        print ('Loading char embedding from %s'%file_name)
+        ret = {}
+        with open(file_name) as inf:
+            for idx, line in enumerate(inf):
+                info = line.strip().split(' ')
+                if info[0].lower() not in ret:
+                    ret[info[0]] = np.array(map(lambda x:float(x), info[1:]))
+        return ret
+    else:
+        print ('Load used word embedding')
+        with open('glove/char2idx.json') as inf:
+            w2i = json.load(inf)
+        with open('glove/usedcharemb.npy') as inf:
+            word_emb_val = np.load(inf)
+        return w2i, word_emb_val
