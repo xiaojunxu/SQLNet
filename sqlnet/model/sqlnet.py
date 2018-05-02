@@ -11,7 +11,7 @@ from modules.sqlnet_condition_predict import SQLNetCondPredictor
 
 
 class SQLNet(nn.Module):
-    def __init__(self, word_emb, N_word, N_h=100, N_depth=2,
+    def __init__(self, word_emb ,char_emb ,N_word, N_h=100, N_depth=2,
             gpu=False, use_ca=True, trainable_emb=False):
         super(SQLNet, self).__init__()
         self.use_ca = use_ca
@@ -29,21 +29,21 @@ class SQLNet(nn.Module):
 
         #Word embedding
         if trainable_emb:
-            self.agg_embed_layer = WordEmbedding(word_emb, N_word, gpu,
-                    self.SQL_TOK, our_model=True, trainable=trainable_emb)
-            self.sel_embed_layer = WordEmbedding(word_emb, N_word, gpu,
-                    self.SQL_TOK, our_model=True, trainable=trainable_emb)
-            self.cond_embed_layer = WordEmbedding(word_emb, N_word, gpu,
-                    self.SQL_TOK, our_model=True, trainable=trainable_emb)
+            self.agg_embed_layer = WordEmbedding(word_emb,None, N_word, gpu,
+                    self.SQL_TOK, our_model=True, trainable=False)
+            self.sel_embed_layer = WordEmbedding(word_emb,char_emb, N_word, gpu,
+                    self.SQL_TOK, our_model=True, trainable=False)
+            self.cond_embed_layer = WordEmbedding(word_emb,None,N_word, gpu,
+                    self.SQL_TOK, our_model=True, trainable=False)
         else:
-            self.embed_layer = WordEmbedding(word_emb, N_word, gpu,
+            self.embed_layer = WordEmbedding(word_emb, None, N_word, gpu,
                     self.SQL_TOK, our_model=True, trainable=trainable_emb)
         
         #Predict aggregator
         self.agg_pred = AggPredictor(N_word, N_h, N_depth, use_ca=use_ca)
 
         #Predict selected column
-        self.sel_pred = SelPredictor(N_word, N_h, N_depth,
+        self.sel_pred = SelPredictor(N_word*2, N_h, N_depth,
                 self.max_tok_num, use_ca=use_ca)
 
         #Predict number of cond
@@ -59,25 +59,25 @@ class SQLNet(nn.Module):
             self.cuda()
 
 
-    def generate_gt_where_seq(self, q, col, query):
+    def generate_gt_where_seq(self, q, col, sql_query):
         ret_seq = []
-        for cur_q, cur_col, cur_query in zip(q, col, query):
+        for cur_q, cur_col, cur_sql_query in zip(q, col, sql_query):
             cur_values = []
-            st = cur_query.index(u'WHERE')+1 if \
-                    u'WHERE' in cur_query else len(cur_query)
+            st = cur_sql_query.index(u'WHERE')+1 if \
+                    u'WHERE' in cur_sql_query else len(cur_sql_query)
             all_toks = ['<BEG>'] + cur_q + ['<END>']
-            while st < len(cur_query):
-                ed = len(cur_query) if 'AND' not in cur_query[st:]\
-                        else cur_query[st:].index('AND') + st
-                if 'EQL' in cur_query[st:ed]:
-                    op = cur_query[st:ed].index('EQL') + st
-                elif 'GT' in cur_query[st:ed]:
-                    op = cur_query[st:ed].index('GT') + st
-                elif 'LT' in cur_query[st:ed]:
-                    op = cur_query[st:ed].index('LT') + st
+            while st < len(cur_sql_query):
+                ed = len(cur_sql_query) if 'AND' not in cur_sql_query[st:]\
+                        else cur_sql_query[st:].index('AND') + st
+                if 'EQL' in cur_sql_query[st:ed]:
+                    op = cur_sql_query[st:ed].index('EQL') + st
+                elif 'GT' in cur_sql_query[st:ed]:
+                    op = cur_sql_query[st:ed].index('GT') + st
+                elif 'LT' in cur_sql_query[st:ed]:
+                    op = cur_sql_query[st:ed].index('LT') + st
                 else:
                     raise RuntimeError("No operator in it!")
-                this_str = ['<BEG>'] + cur_query[op+1:ed] + ['<END>']
+                this_str = ['<BEG>'] + cur_sql_query[op+1:ed] + ['<END>']
                 cur_seq = [all_toks.index(s) if s in all_toks \
                         else 0 for s in this_str]
                 cur_values.append(cur_seq)
@@ -154,7 +154,7 @@ class SQLNet(nn.Module):
             else:
                 agg_truth_var = Variable(data)
 
-            loss += self.CE(agg_score, agg_truth_var)
+            loss += self.CE(agg_score, agg_truth_var) #B,6 #B
 
         if pred_sel:
             sel_truth = map(lambda x:x[1], truth_num)
@@ -164,7 +164,7 @@ class SQLNet(nn.Module):
             else:
                 sel_truth_var = Variable(data)
 
-            loss += self.CE(sel_score, sel_truth_var)
+            loss += self.CE(sel_score, sel_truth_var) #B,11 #B
 
         if pred_cond:
             B = len(truth_num)
@@ -177,7 +177,7 @@ class SQLNet(nn.Module):
                 cond_num_truth_var = Variable(data.cuda())
             else:
                 cond_num_truth_var = Variable(data)
-            loss += self.CE(cond_num_score, cond_num_truth_var)
+            loss += self.CE(cond_num_score, cond_num_truth_var) #B,5 #B
 
             #Evaluate the columns of conditions
             T = len(cond_col_score[0])
@@ -211,20 +211,20 @@ class SQLNet(nn.Module):
                 loss += (self.CE(cond_op_pred, cond_op_truth_var) \
                         / len(truth_num))
 
-            #Evaluate the strings of conditions
+            #Evaluate the strings of conditions #cond_str_score B,4,5,20
             for b in range(len(gt_where)):
                 for idx in range(len(gt_where[b])):
-                    cond_str_truth = gt_where[b][idx]
+                    cond_str_truth = gt_where[b][idx] #a list like [0,7,8,10]
                     if len(cond_str_truth) == 1:
                         continue
-                    data = torch.from_numpy(np.array(cond_str_truth[1:]))
+                    data = torch.from_numpy(np.array(cond_str_truth[1:])) # start from 1 to last
                     if self.gpu:
-                        cond_str_truth_var = Variable(data.cuda())
+                        cond_str_truth_var = Variable(data.cuda()) # 3
                     else:
-                        cond_str_truth_var = Variable(data)
+                        cond_str_truth_var = Variable(data) # 3
                     str_end = len(cond_str_truth)-1
-                    cond_str_pred = cond_str_score[b, idx, :str_end]
-                    loss += (self.CE(cond_str_pred, cond_str_truth_var) \
+                    cond_str_pred = cond_str_score[b, idx, :str_end] #3,20 #first 3
+                    loss += (self.CE(cond_str_pred, cond_str_truth_var)  #3,20 #3
                             / (len(gt_where) * len(gt_where[b])))
 
         return loss
@@ -369,6 +369,9 @@ class SQLNet(nn.Module):
                         [x.data.cpu().numpy() for x in cond_score]
                 cond_num = np.argmax(cond_num_score[b])
                 all_toks = ['<BEG>'] + q[b] + ['<END>']
+                print '-cond_col_score[b]'
+                print -cond_col_score[b]
+                print np.argsort(-cond_col_score[b])
                 max_idxes = np.argsort(-cond_col_score[b])[:cond_num]
                 for idx in range(cond_num):
                     cur_cond = []
