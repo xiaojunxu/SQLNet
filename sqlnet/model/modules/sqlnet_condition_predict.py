@@ -172,7 +172,7 @@ class SQLNetCondPredictor(nn.Module):
 
         cond_col_score = self.cond_col_out(self.cond_col_out_K(
             torch.cat([K_cond_col,temp2*e_cond_col],dim=-1)) +
-                self.cond_col_out_col(e_cond_col)).squeeze() # B,6
+                self.cond_col_out_col(e_cond_col)).squeeze()
         max_col_num = max(col_num)
         for b, num in enumerate(col_num):
             if num < max_col_num:
@@ -181,10 +181,10 @@ class SQLNetCondPredictor(nn.Module):
         #Predict the operator of conditions
         chosen_col_gt = []
         if gt_cond is None:
-            cond_nums = np.argmax(cond_num_score.data.cpu().numpy(), axis=1) # B
-            col_scores = cond_col_score.data.cpu().numpy() # B,6
+            cond_nums = np.argmax(cond_num_score.data.cpu().numpy(), axis=1)
+            col_scores = cond_col_score.data.cpu().numpy()
             chosen_col_gt = [list(np.argsort(-col_scores[b])[:cond_nums[b]])
-                    for b in range(len(cond_nums))] # B []
+                    for b in range(len(cond_nums))]
         else:
             chosen_col_gt = [ [x[0] for x in one_gt_cond] for 
                     one_gt_cond in gt_cond]
@@ -197,7 +197,7 @@ class SQLNetCondPredictor(nn.Module):
                 for x in chosen_col_gt[b]] + [e_cond_col[b, 0]] *
                 (4 - len(chosen_col_gt[b])))  # Pad the columns to maximum (4)
             col_emb.append(cur_col_emb)
-        col_emb = torch.stack(col_emb) # B,4,100
+        col_emb = torch.stack(col_emb)
 
         h_op_enc, _ = run_lstm(self.cond_op_lstm, x_emb_var, x_len)
         if self.use_ca:
