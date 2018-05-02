@@ -29,21 +29,21 @@ class SQLNet(nn.Module):
 
         #Word embedding
         if trainable_emb:
-            self.agg_embed_layer = WordEmbedding(word_emb, N_word, gpu,
-                    self.SQL_TOK, our_model=True, trainable=trainable_emb)
-            self.sel_embed_layer = WordEmbedding(word_emb, N_word, gpu,
-                    self.SQL_TOK, our_model=True, trainable=trainable_emb)
-            self.cond_embed_layer = WordEmbedding(word_emb, N_word, gpu,
-                    self.SQL_TOK, our_model=True, trainable=trainable_emb)
+            self.agg_embed_layer = WordEmbedding(word_emb,None, N_word, gpu,
+                    self.SQL_TOK, our_model=True, trainable=False)
+            self.sel_embed_layer = WordEmbedding(word_emb,char_emb, N_word, gpu,
+                    self.SQL_TOK, our_model=True, trainable=False)
+            self.cond_embed_layer = WordEmbedding(word_emb,None,N_word, gpu,
+                    self.SQL_TOK, our_model=True, trainable=False)
         else:
-            self.embed_layer = WordEmbedding(word_emb, N_word, gpu,
+            self.embed_layer = WordEmbedding(word_emb, None, N_word, gpu,
                     self.SQL_TOK, our_model=True, trainable=trainable_emb)
         
         #Predict aggregator
         self.agg_pred = AggPredictor(N_word, N_h, N_depth, use_ca=use_ca)
 
         #Predict selected column
-        self.sel_pred = SelPredictor(N_word, N_h, N_depth,
+        self.sel_pred = SelPredictor(N_word*2, N_h, N_depth,
                 self.max_tok_num, use_ca=use_ca)
 
         #Predict number of cond
