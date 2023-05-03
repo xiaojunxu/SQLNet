@@ -4,10 +4,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
 import numpy as np
-from modules.word_embedding import WordEmbedding
-from modules.aggregator_predict import AggPredictor
-from modules.selection_predict import SelPredictor
-from modules.seq2sql_condition_predict import Seq2SQLCondPredictor
+from .modules.word_embedding import WordEmbedding
+from .modules.aggregator_predict import AggPredictor
+from .modules.selection_predict import SelPredictor
+from .modules.seq2sql_condition_predict import Seq2SQLCondPredictor
 
 # This is a re-implementation based on the following paper:
 
@@ -80,8 +80,8 @@ class Seq2SQL(nn.Module):
             cur_seq = [all_toks.index('<BEG>')]
             if 'WHERE' in cur_query:
                 cur_where_query = cur_query[cur_query.index('WHERE'):]
-                cur_seq = cur_seq + map(lambda tok:all_toks.index(tok)
-                                        if tok in all_toks else 0, cur_where_query)
+                cur_seq = cur_seq + list(map(lambda tok:all_toks.index(tok)
+                                        if tok in all_toks else 0, cur_where_query))
             cur_seq.append(all_toks.index('<END>'))
             ret_seq.append(cur_seq)
         return ret_seq
@@ -146,7 +146,7 @@ class Seq2SQL(nn.Module):
         agg_score, sel_score, cond_score = score
         loss = 0
         if pred_agg:
-            agg_truth = map(lambda x:x[0], truth_num)
+            agg_truth = list(map(lambda x:x[0], truth_num))
             data = torch.from_numpy(np.array(agg_truth))
             if self.gpu:
                 agg_truth_var = Variable(data.cuda())
@@ -156,7 +156,7 @@ class Seq2SQL(nn.Module):
             loss += self.CE(agg_score, agg_truth_var)
 
         if pred_sel:
-            sel_truth = map(lambda x:x[1], truth_num)
+            sel_truth = list(map(lambda x:x[1], truth_num))
             data = torch.from_numpy(np.array(sel_truth))
             if self.gpu:
                 sel_truth_var = Variable(data).cuda()
@@ -199,9 +199,9 @@ class Seq2SQL(nn.Module):
 
     def check_acc(self, vis_info, pred_queries, gt_queries, pred_entry):
         def pretty_print(vis_data):
-            print 'question:', vis_data[0]
-            print 'headers: (%s)'%(' || '.join(vis_data[1]))
-            print 'query:', vis_data[2]
+            print ('question:', vis_data[0])
+            print ('headers: (%s)'%(' || '.join(vis_data[1])))
+            print ('query:', vis_data[2])
 
         def gen_cond_str(conds, header):
             if len(conds) == 0:
@@ -349,7 +349,7 @@ class Seq2SQL(nn.Module):
                         cond_toks.append(cond_val)
 
                 if verbose:
-                    print cond_toks
+                    print (cond_toks)
                 if len(cond_toks) > 0:
                     cond_toks = cond_toks[1:]
                 st = 0
