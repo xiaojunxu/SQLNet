@@ -210,7 +210,7 @@ class Seq2SQL(nn.Module):
             for cond in conds:
                 cond_str.append(
                     header[cond[0]] + ' ' + self.COND_OPS[cond[1]] + \
-                    ' ' + unicode(cond[2]).lower())
+                    ' ' + str(cond[2]).lower())
             return 'WHERE ' + ' AND '.join(cond_str)
 
         pred_agg, pred_sel, pred_cond = pred_entry
@@ -261,8 +261,8 @@ class Seq2SQL(nn.Module):
                     if not flag:
                         break
                     gt_idx = tuple(x[0] for x in cond_gt).index(cond_pred[idx][0])
-                    if flag and unicode(cond_gt[gt_idx][2]).lower() != \
-                       unicode(cond_pred[idx][2]).lower():
+                    if flag and str(cond_gt[gt_idx][2]).lower() != \
+                       str(cond_pred[idx][2]).lower():
                         flag = False
                         cond_val_err += 1
 

@@ -34,7 +34,7 @@ class DBEngine:
         where_clause = []
         where_map = {}
         for col_index, op, val in conditions:
-            if lower and (isinstance(val, str) or isinstance(val, unicode)):
+            if lower and isinstance(val, str):
                 val = val.lower()
             if schema['col{}'.format(col_index)] == 'real' and not isinstance(val, (int, float)):
                 try:
