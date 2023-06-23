@@ -5,7 +5,6 @@ jdcal==1.3
 odfpy==1.3.5
 olefile==0.44
 openpyxl==2.4.9
-pkg-resources==0.0.0
 pytz==2017.3
 records==0.5.2
 SQLAlchemy==1.1.14
