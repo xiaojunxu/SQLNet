@@ -14,7 +14,7 @@ def load_data(sql_paths, table_paths, use_small=False):
 
     max_col_num = 0
     for SQL_PATH in sql_paths:
-        print "Loading data from %s"%SQL_PATH
+        print ("Loading data from %s"%SQL_PATH)
         with open(SQL_PATH) as inf:
             for idx, line in enumerate(inf):
                 if use_small and idx >= 1000:
@@ -23,7 +23,7 @@ def load_data(sql_paths, table_paths, use_small=False):
                 sql_data.append(sql)
 
     for TABLE_PATH in table_paths:
-        print "Loading data from %s"%TABLE_PATH
+        print ("Loading data from %s"%TABLE_PATH)
         with open(TABLE_PATH) as inf:
             for line in inf:
                 tab = json.loads(line.strip())
@@ -36,7 +36,7 @@ def load_data(sql_paths, table_paths, use_small=False):
 
 def load_dataset(dataset_id, use_small=False):
     if dataset_id == 0:
-        print "Loading from original dataset"
+        print ("Loading from original dataset")
         sql_data, table_data = load_data('data/train_tok.jsonl',
                 'data/train_tok.tables.jsonl', use_small=use_small)
         val_sql_data, val_table_data = load_data('data/dev_tok.jsonl',
@@ -47,7 +47,7 @@ def load_dataset(dataset_id, use_small=False):
         DEV_DB = 'data/dev.db'
         TEST_DB = 'data/test.db'
     else:
-        print "Loading from re-split dataset"
+        print ("Loading from re-split dataset")
         sql_data, table_data = load_data('data_resplit/train.jsonl',
                 'data_resplit/tables.jsonl', use_small=use_small)
         val_sql_data, val_table_data = load_data('data_resplit/dev.jsonl',
