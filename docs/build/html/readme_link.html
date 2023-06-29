@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>About The Project &#8212; SQLNet 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to SQLNet’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="about-the-project">
+<h1>About The Project<a class="headerlink" href="#about-the-project" title="Permalink to this heading">¶</a></h1>
+<p># SQLNet</p>
+<p>This repo provides an implementation of SQLNet and Seq2SQL neural networks for predicting SQL queries on [WikiSQL dataset](<a class="reference external" href="https://github.com/salesforce/WikiSQL">https://github.com/salesforce/WikiSQL</a>). The paper is available at [here](<a class="reference external" href="https://arxiv.org/abs/1711.04436">https://arxiv.org/abs/1711.04436</a>).</p>
+<p>## Citation</p>
+<p>&gt; Xiaojun Xu, Chang Liu, Dawn Song. 2017. SQLNet: Generating Structured Queries from Natural Language Without Reinforcement Learning.</p>
+<p>## Bibtex</p>
+<p><code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">&#64;article{xu2017sqlnet,</span>
+<span class="pre">title={SQLNet:</span> <span class="pre">Generating</span> <span class="pre">Structured</span> <span class="pre">Queries</span> <span class="pre">From</span> <span class="pre">Natural</span> <span class="pre">Language</span> <span class="pre">Without</span> <span class="pre">Reinforcement</span> <span class="pre">Learning},</span>
+<span class="pre">author={Xu,</span> <span class="pre">Xiaojun</span> <span class="pre">and</span> <span class="pre">Liu,</span> <span class="pre">Chang</span> <span class="pre">and</span> <span class="pre">Song,</span> <span class="pre">Dawn},</span>
+<span class="pre">journal={arXiv</span> <span class="pre">preprint</span> <span class="pre">arXiv:1711.04436},</span>
+<span class="pre">year={2017}</span>
+<span class="pre">}</span>
+<span class="pre">`</span></code></p>
+<p>## Installation
+The data is in <cite>data.tar.bz2</cite>. Unzip the code by running
+<code class="docutils literal notranslate"><span class="pre">`bash</span>
+<span class="pre">tar</span> <span class="pre">-xjvf</span> <span class="pre">data.tar.bz2</span>
+<span class="pre">`</span></code></p>
+<p>The code is written using PyTorch in Python 2.7. Check [here](<a class="reference external" href="http://pytorch.org/">http://pytorch.org/</a>) to install PyTorch. You can install other dependency by running
+<code class="docutils literal notranslate"><span class="pre">`bash</span>
+<span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements.txt</span>
+<span class="pre">`</span></code></p>
+<p>## Downloading the glove embedding.
+Download the pretrained glove embedding from [here](<a class="reference external" href="https://github.com/stanfordnlp/GloVe">https://github.com/stanfordnlp/GloVe</a>) using
+<code class="docutils literal notranslate"><span class="pre">`bash</span>
+<span class="pre">bash</span> <span class="pre">download_glove.sh</span>
+<span class="pre">`</span></code></p>
+<p>## Extract the glove embedding for training.
+Run the following command to process the pretrained glove embedding for training the word embedding:
+<code class="docutils literal notranslate"><span class="pre">`bash</span>
+<span class="pre">python</span> <span class="pre">extract_vocab.py</span>
+<span class="pre">`</span></code></p>
+<p>## Train
+The training script is <cite>train.py</cite>. To see the detailed parameters for running:
+<code class="docutils literal notranslate"><span class="pre">`bash</span>
+<span class="pre">python</span> <span class="pre">train.py</span> <span class="pre">-h</span>
+<span class="pre">`</span></code></p>
+<p>Some typical usage are listed as below:</p>
+<p>Train a SQLNet model with column attention:
+<code class="docutils literal notranslate"><span class="pre">`bash</span>
+<span class="pre">python</span> <span class="pre">train.py</span> <span class="pre">--ca</span>
+<span class="pre">`</span></code></p>
+<p>Train a SQLNet model with column attention and trainable embedding (requires pretraining without training embedding, i.e., executing the command above):
+<code class="docutils literal notranslate"><span class="pre">`bash</span>
+<span class="pre">python</span> <span class="pre">train.py</span> <span class="pre">--ca</span> <span class="pre">--train_emb</span>
+<span class="pre">`</span></code></p>
+<p>Pretrain a [Seq2SQL model](<a class="reference external" href="https://arxiv.org/abs/1709.00103">https://arxiv.org/abs/1709.00103</a>) on the re-splitted dataset
+<code class="docutils literal notranslate"><span class="pre">`bash</span>
+<span class="pre">python</span> <span class="pre">train.py</span> <span class="pre">--baseline</span> <span class="pre">--dataset</span> <span class="pre">1</span>
+<span class="pre">`</span></code></p>
+<p>Train a Seq2SQL model with Reinforcement Learning after pretraining
+<code class="docutils literal notranslate"><span class="pre">`bash</span>
+<span class="pre">python</span> <span class="pre">train.py</span> <span class="pre">--baseline</span> <span class="pre">--dataset</span> <span class="pre">1</span> <span class="pre">--rl</span>
+<span class="pre">`</span></code></p>
+<p>## Test
+The script for evaluation on the dev split and test split. The parameters for evaluation is roughly the same as the one used for training. For example, the commands for evaluating the models from above commands are:</p>
+<p>Test a trained SQLNet model with column attention
+<code class="docutils literal notranslate"><span class="pre">`bash</span>
+<span class="pre">python</span> <span class="pre">test.py</span> <span class="pre">--ca</span>
+<span class="pre">`</span></code></p>
+<p>Test a trained SQLNet model with column attention and trainable embedding:
+<code class="docutils literal notranslate"><span class="pre">`bash</span>
+<span class="pre">python</span> <span class="pre">test.py</span> <span class="pre">--ca</span> <span class="pre">--train_emb</span>
+<span class="pre">`</span></code></p>
+<p>Test a trained [Seq2SQL model](<a class="reference external" href="https://arxiv.org/abs/1709.00103">https://arxiv.org/abs/1709.00103</a>) withour RL on the re-splitted dataset
+<code class="docutils literal notranslate"><span class="pre">`bash</span>
+<span class="pre">python</span> <span class="pre">test.py</span> <span class="pre">--baseline</span> <span class="pre">--dataset</span> <span class="pre">1</span>
+<span class="pre">`</span></code></p>
+<p>Test a trained Seq2SQL model with Reinforcement learning
+<code class="docutils literal notranslate"><span class="pre">`bash</span>
+<span class="pre">python</span> <span class="pre">test.py</span> <span class="pre">--baseline</span> <span class="pre">--dataset</span> <span class="pre">1</span> <span class="pre">--rl</span>
+<span class="pre">`</span></code></p>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">SQLNet</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">README</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to SQLNet’s documentation!</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, xiaojunxu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/readme_link.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

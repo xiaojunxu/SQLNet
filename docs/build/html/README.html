@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>SQLNet &#8212; SQLNet 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="sqlnet">
+<h1>SQLNet<a class="headerlink" href="#sqlnet" title="Permalink to this heading">¶</a></h1>
+<p>This repo provides an implementation of SQLNet and Seq2SQL neural networks for predicting SQL queries on <a class="reference external" href="https://github.com/salesforce/WikiSQL">WikiSQL dataset</a>. The paper is available at <a class="reference external" href="https://arxiv.org/abs/1711.04436">here</a>.</p>
+<section id="citation">
+<h2>Citation<a class="headerlink" href="#citation" title="Permalink to this heading">¶</a></h2>
+<blockquote>
+<div><p>Xiaojun Xu, Chang Liu, Dawn Song. 2017. SQLNet: Generating Structured Queries from Natural Language Without Reinforcement Learning.</p>
+</div></blockquote>
+</section>
+<section id="bibtex">
+<h2>Bibtex<a class="headerlink" href="#bibtex" title="Permalink to this heading">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@article</span><span class="p">{</span><span class="n">xu2017sqlnet</span><span class="p">,</span>
+<span class="n">title</span><span class="o">=</span><span class="p">{</span><span class="n">SQLNet</span><span class="p">:</span> <span class="n">Generating</span> <span class="n">Structured</span> <span class="n">Queries</span> <span class="n">From</span> <span class="n">Natural</span> <span class="n">Language</span> <span class="n">Without</span> <span class="n">Reinforcement</span> <span class="n">Learning</span><span class="p">},</span>
+<span class="n">author</span><span class="o">=</span><span class="p">{</span><span class="n">Xu</span><span class="p">,</span> <span class="n">Xiaojun</span> <span class="ow">and</span> <span class="n">Liu</span><span class="p">,</span> <span class="n">Chang</span> <span class="ow">and</span> <span class="n">Song</span><span class="p">,</span> <span class="n">Dawn</span><span class="p">},</span>
+<span class="n">journal</span><span class="o">=</span><span class="p">{</span><span class="n">arXiv</span> <span class="n">preprint</span> <span class="n">arXiv</span><span class="p">:</span><span class="mf">1711.04436</span><span class="p">},</span>
+<span class="n">year</span><span class="o">=</span><span class="p">{</span><span class="mi">2017</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">¶</a></h2>
+<p>The data is in <code class="docutils literal notranslate"><span class="pre">data.tar.bz2</span></code>. Unzip the code by running</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>tar<span class="w"> </span>-xjvf<span class="w"> </span>data.tar.bz2
+</pre></div>
+</div>
+<p>The code is written using PyTorch in Python 2.7. Check <a class="reference external" href="http://pytorch.org/">here</a> to install PyTorch. You can install other dependency by running</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</pre></div>
+</div>
+</section>
+<section id="downloading-the-glove-embedding">
+<h2>Downloading the glove embedding.<a class="headerlink" href="#downloading-the-glove-embedding" title="Permalink to this heading">¶</a></h2>
+<p>Download the pretrained glove embedding from <a class="reference external" href="https://github.com/stanfordnlp/GloVe">here</a> using</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bash<span class="w"> </span>download_glove.sh
+</pre></div>
+</div>
+</section>
+<section id="extract-the-glove-embedding-for-training">
+<h2>Extract the glove embedding for training.<a class="headerlink" href="#extract-the-glove-embedding-for-training" title="Permalink to this heading">¶</a></h2>
+<p>Run the following command to process the pretrained glove embedding for training the word embedding:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>extract_vocab.py
+</pre></div>
+</div>
+</section>
+<section id="train">
+<h2>Train<a class="headerlink" href="#train" title="Permalink to this heading">¶</a></h2>
+<p>The training script is <code class="docutils literal notranslate"><span class="pre">train.py</span></code>. To see the detailed parameters for running:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>train.py<span class="w"> </span>-h
+</pre></div>
+</div>
+<p>Some typical usage are listed as below:</p>
+<p>Train a SQLNet model with column attention:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>train.py<span class="w"> </span>--ca
+</pre></div>
+</div>
+<p>Train a SQLNet model with column attention and trainable embedding (requires pretraining without training embedding, i.e., executing the command above):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>train.py<span class="w"> </span>--ca<span class="w"> </span>--train_emb
+</pre></div>
+</div>
+<p>Pretrain a <a class="reference external" href="https://arxiv.org/abs/1709.00103">Seq2SQL model</a> on the re-splitted dataset</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>train.py<span class="w"> </span>--baseline<span class="w"> </span>--dataset<span class="w"> </span><span class="m">1</span>
+</pre></div>
+</div>
+<p>Train a Seq2SQL model with Reinforcement Learning after pretraining</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>train.py<span class="w"> </span>--baseline<span class="w"> </span>--dataset<span class="w"> </span><span class="m">1</span><span class="w"> </span>--rl
+</pre></div>
+</div>
+</section>
+<section id="test">
+<h2>Test<a class="headerlink" href="#test" title="Permalink to this heading">¶</a></h2>
+<p>The script for evaluation on the dev split and test split. The parameters for evaluation is roughly the same as the one used for training. For example, the commands for evaluating the models from above commands are:</p>
+<p>Test a trained SQLNet model with column attention</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>test.py<span class="w"> </span>--ca
+</pre></div>
+</div>
+<p>Test a trained SQLNet model with column attention and trainable embedding:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>test.py<span class="w"> </span>--ca<span class="w"> </span>--train_emb
+</pre></div>
+</div>
+<p>Test a trained <a class="reference external" href="https://arxiv.org/abs/1709.00103">Seq2SQL model</a> withour RL on the re-splitted dataset</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>test.py<span class="w"> </span>--baseline<span class="w"> </span>--dataset<span class="w"> </span><span class="m">1</span>
+</pre></div>
+</div>
+<p>Test a trained Seq2SQL model with Reinforcement learning</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>test.py<span class="w"> </span>--baseline<span class="w"> </span>--dataset<span class="w"> </span><span class="m">1</span><span class="w"> </span>--rl
+</pre></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">SQLNet</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="readme_link.html">README</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, xiaojunxu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/README.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

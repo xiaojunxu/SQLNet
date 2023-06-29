@@ -199,9 +199,9 @@ class Seq2SQL(nn.Module):
 
     def check_acc(self, vis_info, pred_queries, gt_queries, pred_entry):
         def pretty_print(vis_data):
-            print 'question:', vis_data[0]
-            print 'headers: (%s)'%(' || '.join(vis_data[1]))
-            print 'query:', vis_data[2]
+            print ('question:', vis_data[0])
+            print ('headers: (%s)'%(' || '.join(vis_data[1])))
+            print ('query:', vis_data[2])
 
         def gen_cond_str(conds, header):
             if len(conds) == 0:
@@ -210,7 +210,7 @@ class Seq2SQL(nn.Module):
             for cond in conds:
                 cond_str.append(
                     header[cond[0]] + ' ' + self.COND_OPS[cond[1]] + \
-                    ' ' + unicode(cond[2]).lower())
+                    ' ' + cond[2]).lower()
             return 'WHERE ' + ' AND '.join(cond_str)
 
         pred_agg, pred_sel, pred_cond = pred_entry
@@ -261,8 +261,8 @@ class Seq2SQL(nn.Module):
                     if not flag:
                         break
                     gt_idx = tuple(x[0] for x in cond_gt).index(cond_pred[idx][0])
-                    if flag and unicode(cond_gt[gt_idx][2]).lower() != \
-                       unicode(cond_pred[idx][2]).lower():
+                    if flag and cond_gt[gt_idx][2].lower() != \
+                       cond_pred[idx][2].lower():
                         flag = False
                         cond_val_err += 1
 
@@ -349,7 +349,7 @@ class Seq2SQL(nn.Module):
                         cond_toks.append(cond_val)
 
                 if verbose:
-                    print cond_toks
+                    print (cond_toks)
                 if len(cond_toks) > 0:
                     cond_toks = cond_toks[1:]
                 st = 0
