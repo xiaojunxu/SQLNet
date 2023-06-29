@@ -18,6 +18,9 @@ This repo provides an implementation of SQLNet and Seq2SQL neural networks for p
 ```
 
 ## Installation
+Project installation can be done either locally or by running a Docker container
+
+## Local installation
 The data is in `data.tar.bz2`. Unzip the code by running
 ```bash
 tar -xjvf data.tar.bz2
@@ -28,16 +31,24 @@ The code is written using PyTorch in Python 2.7. Check [here](http://pytorch.org
 pip install -r requirements.txt
 ```
 
-## Downloading the glove embedding.
+### Downloading the glove embedding.
 Download the pretrained glove embedding from [here](https://github.com/stanfordnlp/GloVe) using
 ```bash
 bash download_glove.sh
 ```
 
-## Extract the glove embedding for training.
+### Extract the glove embedding for training.
 Run the following command to process the pretrained glove embedding for training the word embedding:
 ```bash
 python extract_vocab.py
+```
+
+## Container Installation
+Make sure you have Docker already installed in your machine
+
+To build the Docker image, go to the root directory of the project and run on the terminal:
+```bash
+docker build -t sql-net .
 ```
 
 ## Train
