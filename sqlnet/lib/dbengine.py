@@ -34,7 +34,7 @@ class DBEngine:
         where_clause = []
         where_map = {}
         for col_index, op, val in conditions:
-            if lower and (isinstance(val, str) or isinstance(val, unicode)):
+            if lower and isinstance(val, str):
                 val = val.lower()
             if schema['col{}'.format(col_index)] == 'real' and not isinstance(val, (int, float)):
                 try:
@@ -47,6 +47,6 @@ class DBEngine:
         if where_clause:
             where_str = 'WHERE ' + ' AND '.join(where_clause)
         query = 'SELECT {} AS result FROM {} {}'.format(select, table_id, where_str)
-        #print query
+        #print(query)
         out = self.db.query(query, **where_map)
         return [o.result for o in out]

@@ -47,37 +47,37 @@ if __name__ == '__main__':
     if args.baseline:
         model = Seq2SQL(word_emb, N_word=N_word, gpu=GPU, trainable_emb = True)
     else:
-        model = SQLNet(word_emb, N_word=N_word, use_ca=args.ca, gpu=GPU,
+        model = SQLNet(word_emb, N_word=N_word, use_ca=args.ca, #gpu=GPU,
                 trainable_emb = True)
 
     if args.train_emb:
         agg_m, sel_m, cond_m, agg_e, sel_e, cond_e = best_model_name(args)
-        print "Loading from %s"%agg_m
+        print ("Loading from %s"%agg_m)
         model.agg_pred.load_state_dict(torch.load(agg_m))
-        print "Loading from %s"%sel_m
+        print ("Loading from %s"%sel_m)
         model.sel_pred.load_state_dict(torch.load(sel_m))
-        print "Loading from %s"%cond_m
+        print ("Loading from %s"%cond_m)
         model.cond_pred.load_state_dict(torch.load(cond_m))
-        print "Loading from %s"%agg_e
+        print ("Loading from %s"%agg_e)
         model.agg_embed_layer.load_state_dict(torch.load(agg_e))
-        print "Loading from %s"%sel_e
+        print ("Loading from %s"%sel_e)
         model.sel_embed_layer.load_state_dict(torch.load(sel_e))
-        print "Loading from %s"%cond_e
+        print ("Loading from %s"%cond_e)
         model.cond_embed_layer.load_state_dict(torch.load(cond_e))
     else:
         agg_m, sel_m, cond_m = best_model_name(args)
-        print "Loading from %s"%agg_m
+        print ("Loading from %s"%agg_m)
         model.agg_pred.load_state_dict(torch.load(agg_m))
-        print "Loading from %s"%sel_m
+        print ("Loading from %s"%sel_m)
         model.sel_pred.load_state_dict(torch.load(sel_m))
-        print "Loading from %s"%cond_m
+        print ("Loading from %s"%cond_m)
         model.cond_pred.load_state_dict(torch.load(cond_m))
 
-    print "Dev acc_qm: %s;\n  breakdown on (agg, sel, where): %s"%epoch_acc(
-            model, BATCH_SIZE, val_sql_data, val_table_data, TEST_ENTRY)
-    print "Dev execution acc: %s"%epoch_exec_acc(
-            model, BATCH_SIZE, val_sql_data, val_table_data, DEV_DB)
-    print "Test acc_qm: %s;\n  breakdown on (agg, sel, where): %s"%epoch_acc(
-            model, BATCH_SIZE, test_sql_data, test_table_data, TEST_ENTRY)
-    print "Test execution acc: %s"%epoch_exec_acc(
-            model, BATCH_SIZE, test_sql_data, test_table_data, TEST_DB)
+    print ("Dev acc_qm: %s;\n  breakdown on (agg, sel, where): %s"%epoch_acc(
+            model, BATCH_SIZE, val_sql_data, val_table_data, TEST_ENTRY))
+    print ("Dev execution acc: %s"%epoch_exec_acc(
+            model, BATCH_SIZE, val_sql_data, val_table_data, DEV_DB))
+    print ("Test acc_qm: %s;\n  breakdown on (agg, sel, where): %s"%epoch_acc(
+            model, BATCH_SIZE, test_sql_data, test_table_data, TEST_ENTRY))
+    print ("Test execution acc: %s"%epoch_exec_acc(
+            model, BATCH_SIZE, test_sql_data, test_table_data, TEST_DB))
